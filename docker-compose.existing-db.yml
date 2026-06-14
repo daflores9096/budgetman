@@ -1,0 +1,16 @@
+# Usar solo si migras datos desde budget-manager local:
+#   docker compose -f docker-compose.yml -f docker-compose.existing-db.yml up -d
+#
+# En Synology / instalación nueva NO uses este archivo.
+
+services:
+  db:
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/docker-init/01-ensure-grants.sh:/docker-entrypoint-initdb.d/01-ensure-grants.sh:ro
+      - ./database/schema_tables.sql:/docker-entrypoint-initdb.d/02-schema.sql:ro
+
+volumes:
+  db_data:
+    external: true
+    name: ${EXISTING_DB_VOLUME:-budget-manager_db_data}

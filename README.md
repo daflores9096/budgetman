@@ -8,7 +8,15 @@ Personal budgeting app rebuilt from [budget-manager](https://github.com/daflores
 
 ## Reuse existing database (important)
 
-Budgetman is configured to attach the **existing Docker volume** from budget-manager (`budget-manager_db_data`). Your data is preserved as long as you:
+For a **new Synology/NAS install**, use the default `docker-compose.yml` only and **do not** set `EXISTING_DB_VOLUME`.
+
+To migrate data from local budget-manager:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.existing-db.yml up -d
+```
+
+When reusing an existing volume:
 
 1. **Do not** run `docker compose down -v`
 2. Keep the same `MYSQL_DATABASE`, `MYSQL_USER`, and `MYSQL_PASSWORD` as when the volume was first created
@@ -91,7 +99,9 @@ Invoke-RestMethod "http://localhost:48080/api/health" -Method Get
 
 | Symptom | What to try |
 |---------|-------------|
-| DB volume not found | Ensure `EXISTING_DB_VOLUME=budget-manager_db_data` in `.env` and the volume exists: `docker volume ls` |
+| `1044 Access denied ... to database 'budget_manager'` | On NAS SSH: `sh scripts/fix-mysql-budget-access.sh` then recreate `api`. Check `.env` passwords match first DB init. |
+| `1045 Access denied for user 'budget'` | Password mismatch after first init: `sh scripts/sync-mysql-budget-password.sh` |
+| DB volume not found | For new NAS install, do not use `docker-compose.existing-db.yml` |
 | Port already in use | Change `WEB_PORT` in `.env` |
 | Two MySQL containers | Stop budget-manager: `docker compose down` in that project |
 | Stale API after PHP changes | `docker compose build api web && docker compose up -d` |
