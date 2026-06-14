@@ -1,0 +1,182 @@
+const NAV = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <rect x="3" y="3" width="7" height="9" rx="1" />
+        <rect x="14" y="3" width="7" height="5" rx="1" />
+        <rect x="14" y="12" width="7" height="9" rx="1" />
+        <rect x="3" y="16" width="7" height="5" rx="1" />
+      </svg>
+    ),
+  },
+  {
+    id: 'ingresos',
+    label: 'Ingresos',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M7 8h10M7 12h6" />
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+      </svg>
+    ),
+  },
+  {
+    id: 'gastos',
+    label: 'Gastos',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
+        <path d="M12 2v20" />
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H7" />
+      </svg>
+    ),
+  },
+  {
+    id: 'gastos_fijos',
+    label: 'Gastos fijos',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <rect x="4" y="5" width="16" height="14" rx="2" />
+        <path d="M8 9h8M8 13h5" />
+      </svg>
+    ),
+  },
+  {
+    id: 'categorias',
+    label: 'Categorías',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M4 6h16" />
+        <path d="M4 12h16" />
+        <path d="M4 18h16" />
+        <path d="M7 6v12" />
+      </svg>
+    ),
+  },
+  {
+    id: 'users',
+    label: 'Usuarios',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    ),
+  },
+  {
+    id: 'backups',
+    label: 'Respaldos',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M12 3v10" />
+        <path d="m8 9 4 4 4-4" />
+        <path d="M5 17h14" />
+        <path d="M5 21h14" />
+      </svg>
+    ),
+  },
+];
+
+const BOTTOM_NAV = [
+  {
+    id: 'dashboard',
+    label: 'Inicio',
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
+        <path d="M3 10.5 12 3l9 7.5" />
+        <path d="M5 10v10h14V10" />
+        <path d="M9 20v-6h6v6" />
+      </svg>
+    ),
+  },
+  {
+    id: 'ingresos',
+    label: 'Ingresos',
+    icon: NAV.find((item) => item.id === 'ingresos')?.icon,
+  },
+  {
+    id: 'gastos',
+    label: 'Gastos',
+    icon: NAV.find((item) => item.id === 'gastos')?.icon,
+  },
+];
+
+function sidebarDisplayName(user) {
+  if (!user) return '';
+  const name = String(user.name || '').trim();
+  if (name) return name;
+  const username = String(user.username || '').trim();
+  if (username) return username;
+  return String(user.email || '').trim();
+}
+
+export default function Sidebar({ active, onNavigate, open, onOpen, onClose, role = 'appuser', onLogout, user = null }) {
+  const visibleNav = NAV.filter((item) => {
+    if (role === 'admin') return true;
+    // appuser: dashboard, incomes, expenses only
+    return item.id === 'dashboard' || item.id === 'ingresos' || item.id === 'gastos';
+  });
+  const who = sidebarDisplayName(user);
+  return (
+    <>
+      <button type="button" className={`sidebar-backdrop ${open ? 'is-visible' : ''}`} aria-label="Cerrar menú" onClick={onClose} />
+      <aside className={`sidebar ${open ? 'is-open' : ''}`} aria-label="Navegación principal">
+        {who ? (
+          <div className="sidebar-user">
+            <div className="sidebar-user-caption">Conectado como</div>
+            <div className="sidebar-user-name">{who}</div>
+          </div>
+        ) : null}
+        <div className="sidebar-menu-label">Menú</div>
+        <nav className="sidebar-nav">
+          {visibleNav.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={`sidebar-link ${active === item.id ? 'is-active' : ''}`}
+              onClick={() => onNavigate(item.id)}
+            >
+              <span className="sidebar-link-icon">{item.icon}</span>
+              <span>{item.label}</span>
+            </button>
+          ))}
+          <button type="button" className="sidebar-link sidebar-logout-link" onClick={onLogout}>
+            <span className="sidebar-link-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <path d="M16 17l5-5-5-5" />
+                <path d="M21 12H9" />
+              </svg>
+            </span>
+            Cerrar sesión
+          </button>
+        </nav>
+      </aside>
+      <nav className="mobile-bottom-nav" aria-label="Navegación rápida móvil">
+        {BOTTOM_NAV.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            className={`mobile-bottom-link ${active === item.id ? 'is-active' : ''}`}
+            onClick={() => onNavigate(item.id)}
+          >
+            <span className="mobile-bottom-icon">{item.icon}</span>
+            <span>{item.label}</span>
+          </button>
+        ))}
+        <button type="button" className="mobile-bottom-link" onClick={onOpen} aria-label="Abrir menú completo">
+          <span className="mobile-bottom-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
+              <path d="M4 6h16" />
+              <path d="M4 12h16" />
+              <path d="M4 18h16" />
+            </svg>
+          </span>
+          <span>Menú</span>
+        </button>
+      </nav>
+    </>
+  );
+}
