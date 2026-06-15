@@ -93,6 +93,11 @@ final class SchemaService
         }
         self::$ledgerDone = true;
 
+        $marker = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'budgetman-ledger-schema-v2.ok';
+        if (is_file($marker)) {
+            return;
+        }
+
         try {
             $cols = $this->db()->query("SELECT TABLE_NAME, COLUMN_NAME
               FROM INFORMATION_SCHEMA.COLUMNS
@@ -110,7 +115,42 @@ final class SchemaService
                 $this->db()->exec('ALTER TABLE incomes ADD COLUMN user_id INT UNSIGNED NULL');
                 $this->db()->exec('ALTER TABLE incomes ADD KEY idx_incomes_user (user_id)');
             }
+            $this->ensureLedgerIndexes();
+            @file_put_contents($marker, 'ok');
         } catch (Throwable) {
+        }
+    }
+
+    private function ensureLedgerIndexes(): void
+    {
+        $rows = $this->db()->query("SELECT TABLE_NAME, INDEX_NAME
+          FROM INFORMATION_SCHEMA.STATISTICS
+          WHERE TABLE_SCHEMA = DATABASE()
+            AND TABLE_NAME IN ('expenses','incomes')")->fetchAll();
+        $has = [];
+        foreach ($rows as $row) {
+            $has[strtolower((string) $row['TABLE_NAME']) . '.' . strtolower((string) $row['INDEX_NAME'])] = true;
+        }
+
+        $indexes = [
+            'incomes.idx_incomes_month' => 'CREATE INDEX idx_incomes_month ON incomes (budget_month_id)',
+            'incomes.idx_incomes_entry_date' => 'CREATE INDEX idx_incomes_entry_date ON incomes (entry_date)',
+            'incomes.idx_incomes_user' => 'CREATE INDEX idx_incomes_user ON incomes (user_id)',
+            'expenses.idx_expenses_month_type' => 'CREATE INDEX idx_expenses_month_type ON expenses (budget_month_id, expense_type)',
+            'expenses.idx_expenses_user' => 'CREATE INDEX idx_expenses_user ON expenses (user_id)',
+            'expenses.idx_expenses_entry_date' => 'CREATE INDEX idx_expenses_entry_date ON expenses (entry_date)',
+            'expenses.idx_expenses_category_date' => 'CREATE INDEX idx_expenses_category_date ON expenses (category, entry_date)',
+        ];
+
+        foreach ($indexes as $key => $sql) {
+            if (!empty($has[$key])) {
+                continue;
+            }
+            try {
+                $this->db()->exec($sql);
+            } catch (Throwable) {
+                // Ignore duplicate or privilege errors; the app can still run without the optional index.
+            }
         }
     }
 

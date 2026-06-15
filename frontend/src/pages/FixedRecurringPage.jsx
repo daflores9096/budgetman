@@ -55,8 +55,7 @@ export default function FixedRecurringPage({ ctx }) {
       setTitle('');
       setExpectedAmount('');
       setCreateOpen(false);
-      await load();
-      await ctx.reloadPendingRecurringFixed?.();
+      await Promise.all([load(), ctx.reloadPendingRecurringFixed?.()]);
     } catch (err) {
       ctx.setError(err.message);
     } finally {
@@ -76,8 +75,7 @@ export default function FixedRecurringPage({ ctx }) {
       });
       setEditOpen(false);
       setEditingId(null);
-      await load();
-      await ctx.reloadPendingRecurringFixed?.();
+      await Promise.all([load(), ctx.reloadPendingRecurringFixed?.()]);
     } catch (err) {
       ctx.setError(err.message);
     } finally {
@@ -91,8 +89,7 @@ export default function FixedRecurringPage({ ctx }) {
     try {
       ctx.setLoading(true);
       await api(`/api/recurring-fixed/${id}`, { method: 'DELETE' });
-      await load();
-      await ctx.reloadPendingRecurringFixed?.();
+      await Promise.all([load(), ctx.reloadPendingRecurringFixed?.()]);
     } catch (err) {
       ctx.setError(err.message);
     } finally {

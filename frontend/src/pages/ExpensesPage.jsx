@@ -63,10 +63,11 @@ export default function ExpensesPage({ ctx }) {
       pendingRecurringFixed={ctx.pendingRecurringFixed || []}
       canManageRecurringFixed={ctx.user?.role === 'admin'}
       onChanged={async () => {
-        await ctx.reloadMonthly();
-        await ctx.reloadDashboard();
-        await ctx.reloadPendingRecurringFixed?.();
-        await loadRange();
+        if (hasRangeFilter) {
+          await Promise.all([loadRange(), ctx.reloadPendingRecurringFixed?.()]);
+          return;
+        }
+        await Promise.all([ctx.reloadMonthly(), ctx.reloadPendingRecurringFixed?.()]);
       }}
       setError={ctx.setError}
       setLoading={ctx.setLoading}

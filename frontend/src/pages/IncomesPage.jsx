@@ -23,7 +23,6 @@ export default function IncomesPage({ ctx }) {
       disabled={ctx.loading}
       onChanged={async () => {
         await ctx.reloadMonthly();
-        await ctx.reloadDashboard();
       }}
       setError={ctx.setError}
       setLoading={ctx.setLoading}
