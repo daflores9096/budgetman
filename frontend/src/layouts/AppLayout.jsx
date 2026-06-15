@@ -1,7 +1,6 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Sidebar from '../Sidebar.jsx';
-import SavingOverlay from '../components/SavingOverlay.jsx';
 import { api } from '../api.js';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { toLocalIsoDate } from '../lib/localIsoDate.js';
@@ -178,12 +177,9 @@ export default function AppLayout() {
     let cancelled = false;
     (async () => {
       try {
-        setLoading(true);
         await loadCategories();
       } catch (e) {
         if (!cancelled) setError(e.message || 'No se pudo conectar con la API');
-      } finally {
-        if (!cancelled) setLoading(false);
       }
     })();
     return () => {
@@ -195,10 +191,8 @@ export default function AppLayout() {
     setError('');
     setLoggingOut(true);
     try {
-      setLoading(true);
       await logout();
     } finally {
-      setLoading(false);
       navigate('/login', { replace: true });
       setLoggingOut(false);
     }
@@ -287,7 +281,6 @@ export default function AppLayout() {
 
   return (
     <div className="app-shell">
-      {loggingOut ? <SavingOverlay className="ui-app-saving" label="Cerrando sesión…" /> : null}
       <Sidebar
         active={
           activeView === 'dashboard'
@@ -322,7 +315,6 @@ export default function AppLayout() {
         </header>
 
         <div className={`main-content ${activeView === 'dashboard' ? 'main-content--wide' : ''}`}>
-          {loading && !loggingOut ? <SavingOverlay label="Procesando…" /> : null}
           {error ? <div className="panel error">{error}</div> : null}
           <Outlet context={ctx} />
         </div>

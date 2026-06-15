@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
 
-export default function Modal({ open, title, children, onClose, busy = false, busyLabel = 'Guardando…' }) {
+export default function Modal({ open, title, children, onClose, busy = false }) {
   if (!open) return null;
   const handleClose = () => {
     if (busy) return;
@@ -16,14 +16,8 @@ export default function Modal({ open, title, children, onClose, busy = false, bu
             <X size={18} strokeWidth={2.2} aria-hidden />
           </button>
         </div>
-        <div className={`ui-modal-body${busy ? ' ui-modal-body--busy' : ''}`}>
+        <div className="ui-modal-body">
           {children}
-          {busy ? (
-            <div className="ui-modal-saving" role="status" aria-live="polite">
-              <span className="ui-spinner" aria-hidden />
-              <span>{busyLabel}</span>
-            </div>
-          ) : null}
         </div>
       </div>
     </div>

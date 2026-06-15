@@ -7,18 +7,15 @@ export default function IncomesPage({ ctx }) {
     (async () => {
       try {
         ctx.setError('');
-        ctx.setLoading(true);
         await ctx.reloadMonthly();
       } catch (err) {
         if (!cancelled) ctx.setError(err.message || 'Error al cargar ingresos');
-      } finally {
-        if (!cancelled) ctx.setLoading(false);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [ctx.reloadMonthly, ctx.setError, ctx.setLoading]);
+  }, [ctx.reloadMonthly, ctx.setError]);
 
   return (
     <IncomeSection

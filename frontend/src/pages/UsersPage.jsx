@@ -28,12 +28,9 @@ export default function UsersPage({ ctx }) {
     (async () => {
       try {
         ctx.setError('');
-        ctx.setLoading(true);
         await load();
       } catch (e) {
         if (!cancelled) ctx.setError(e.message || 'Error al cargar usuarios');
-      } finally {
-        if (!cancelled) ctx.setLoading(false);
       }
     })();
     return () => {

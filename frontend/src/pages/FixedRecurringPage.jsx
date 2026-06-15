@@ -25,12 +25,9 @@ export default function FixedRecurringPage({ ctx }) {
     let cancelled = false;
     (async () => {
       try {
-        ctx.setLoading(true);
         await load();
       } catch (e) {
         if (!cancelled) ctx.setError(e.message || 'Error al cargar');
-      } finally {
-        if (!cancelled) ctx.setLoading(false);
       }
     })();
     return () => {
