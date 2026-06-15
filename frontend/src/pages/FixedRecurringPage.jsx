@@ -15,6 +15,7 @@ export default function FixedRecurringPage({ ctx }) {
   const [editingTitle, setEditingTitle] = useState('');
   const [editingExpected, setEditingExpected] = useState('');
   const [editingCategory, setEditingCategory] = useState('Varios');
+  const [listLoading, setListLoading] = useState(false);
 
   const load = useCallback(async () => {
     const data = await api('/api/recurring-fixed');
@@ -25,9 +26,12 @@ export default function FixedRecurringPage({ ctx }) {
     let cancelled = false;
     (async () => {
       try {
+        setListLoading(true);
         await load();
       } catch (e) {
         if (!cancelled) ctx.setError(e.message || 'Error al cargar');
+      } finally {
+        if (!cancelled) setListLoading(false);
       }
     })();
     return () => {
@@ -130,7 +134,13 @@ export default function FixedRecurringPage({ ctx }) {
               </tr>
             </thead>
             <tbody>
-              {sorted.length === 0 ? (
+              {listLoading ? (
+                <tr>
+                  <td colSpan={4} className="ui-muted">
+                    Cargando…
+                  </td>
+                </tr>
+              ) : sorted.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="ui-muted">
                     No hay plantillas. Agrega alquiler, internet, seguros, etc.

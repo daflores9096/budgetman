@@ -165,7 +165,7 @@ function LedgerRow({
   );
 }
 
-export function CategorySection({ items, disabled, onChanged, setError, setLoading }) {
+export function CategorySection({ items, disabled, loading = false, onChanged, setError, setLoading }) {
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [name, setName] = useState('');
@@ -256,7 +256,13 @@ export function CategorySection({ items, disabled, onChanged, setError, setLoadi
               </tr>
             </thead>
             <tbody>
-              {sorted.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={2} className="ui-muted">
+                    Cargando…
+                  </td>
+                </tr>
+              ) : sorted.length === 0 ? (
                 <tr>
                   <td colSpan={2} className="ui-muted">
                     Sin categorías.
@@ -384,7 +390,7 @@ export function CategorySection({ items, disabled, onChanged, setError, setLoadi
   );
 }
 
-export function IncomeSection({ items, disabled, onChanged, setError, setLoading }) {
+export function IncomeSection({ items, disabled, loading = false, onChanged, setError, setLoading }) {
   const [date, setDate] = useState(() => toLocalIsoDate());
   const [title, setTitle] = useState('');
   const [detail, setDetail] = useState('');
@@ -519,7 +525,13 @@ export function IncomeSection({ items, disabled, onChanged, setError, setLoading
               </tr>
             </thead>
             <tbody>
-              {paged.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="ui-muted">
+                    Cargando…
+                  </td>
+                </tr>
+              ) : paged.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="ui-muted">
                     Sin registros.
@@ -712,6 +724,7 @@ export function ExpensesUnifiedSection({
   items,
   categories,
   disabled,
+  loading = false,
   onChanged,
   setError,
   setLoading,
@@ -969,7 +982,11 @@ export function ExpensesUnifiedSection({
             <div className="ui-card-sub">Este mes calendario. Clic en el título para registrar el pago (se quita de la lista al guardar).</div>
           </div>
         </div>
-        {pendingRecurringFixed.length === 0 ? (
+        {loading ? (
+          <p className="ui-muted" style={{ margin: '0 0 0.25rem' }}>
+            Cargando…
+          </p>
+        ) : pendingRecurringFixed.length === 0 ? (
           <p className="ui-muted" style={{ margin: '0 0 0.25rem' }}>
             Sin pendientes para este mes.
           </p>
@@ -1083,7 +1100,13 @@ export function ExpensesUnifiedSection({
               </tr>
             </thead>
             <tbody>
-              {paged.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="ui-muted">
+                    Cargando…
+                  </td>
+                </tr>
+              ) : paged.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="ui-muted">
                     Sin registros.

@@ -17,6 +17,7 @@ export default function UsersPage({ ctx }) {
   const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
   const [resetPasswordUser, setResetPasswordUser] = useState(null);
   const [resetPasswordValue, setResetPasswordValue] = useState('');
+  const [listLoading, setListLoading] = useState(false);
 
   const load = useCallback(async () => {
     const data = await api('/api/users');
@@ -28,9 +29,12 @@ export default function UsersPage({ ctx }) {
     (async () => {
       try {
         ctx.setError('');
+        setListLoading(true);
         await load();
       } catch (e) {
         if (!cancelled) ctx.setError(e.message || 'Error al cargar usuarios');
+      } finally {
+        if (!cancelled) setListLoading(false);
       }
     })();
     return () => {
@@ -126,7 +130,13 @@ export default function UsersPage({ ctx }) {
               </tr>
             </thead>
             <tbody>
-              {sorted.length === 0 ? (
+              {listLoading ? (
+                <tr>
+                  <td colSpan={7} className="ui-muted">
+                    Cargando…
+                  </td>
+                </tr>
+              ) : sorted.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="ui-muted">
                     Sin usuarios.

@@ -14,6 +14,7 @@ export default function ExpensesPage({ ctx }) {
   const end = params.get('end') || '';
   const hasRangeFilter = validIsoDate(start) && validIsoDate(end) && start <= end;
   const [rangeDetail, setRangeDetail] = useState(null);
+  const [listLoading, setListLoading] = useState(false);
 
   const loadRange = useCallback(async () => {
     if (!hasRangeFilter) {
@@ -31,6 +32,7 @@ export default function ExpensesPage({ ctx }) {
     (async () => {
       try {
         ctx.setError('');
+        setListLoading(true);
         if (hasRangeFilter) {
           await Promise.all([loadRange(), ctx.reloadPendingRecurringFixed?.()]);
         } else {
@@ -39,6 +41,8 @@ export default function ExpensesPage({ ctx }) {
         }
       } catch (err) {
         if (!cancelled) ctx.setError(err.message || 'Error al cargar gastos');
+      } finally {
+        if (!cancelled) setListLoading(false);
       }
     })();
     return () => {
@@ -58,6 +62,7 @@ export default function ExpensesPage({ ctx }) {
       items={(hasRangeFilter ? rangeDetail?.expenses : ctx.monthlyDetail?.expenses) || []}
       categories={ctx.categories || []}
       disabled={ctx.loading}
+      loading={listLoading}
       initialCategoryFilter={categoryFilter}
       filterSummary={filterSummary}
       pendingRecurringFixed={ctx.pendingRecurringFixed || []}

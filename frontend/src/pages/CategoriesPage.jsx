@@ -5,6 +5,7 @@ export default function CategoriesPage({ ctx }) {
     <CategorySection
       items={ctx.categoryItems || []}
       disabled={ctx.loading}
+      loading={ctx.categoriesLoading}
       onChanged={async () => {
         await ctx.reloadCategories();
       }}

@@ -67,6 +67,7 @@ export default function AppLayout() {
 
   const [categories, setCategories] = useState([]);
   const [categoryItems, setCategoryItems] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
 
   const [dashboardPeriod, setDashboardPeriod] = useState('this_month');
   const [dashboardStart, setDashboardStart] = useState(() => toIsoDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1)));
@@ -177,9 +178,12 @@ export default function AppLayout() {
     let cancelled = false;
     (async () => {
       try {
+        setCategoriesLoading(true);
         await loadCategories();
       } catch (e) {
         if (!cancelled) setError(e.message || 'No se pudo conectar con la API');
+      } finally {
+        if (!cancelled) setCategoriesLoading(false);
       }
     })();
     return () => {
@@ -208,6 +212,7 @@ export default function AppLayout() {
       setSidebarOpen,
       categories,
       categoryItems,
+      categoriesLoading,
       reloadCategories: loadCategories,
       dashboardPeriod,
       setDashboardPeriod,
@@ -230,6 +235,7 @@ export default function AppLayout() {
       sidebarOpen,
       categories,
       categoryItems,
+      categoriesLoading,
       loadCategories,
       dashboardPeriod,
       dashboardStart,
