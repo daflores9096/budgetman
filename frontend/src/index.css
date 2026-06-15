@@ -165,20 +165,6 @@ button {
   color: var(--green);
 }
 
-.sidebar-logout-link {
-  margin-top: 0.25rem;
-  color: #991b1b;
-}
-
-.sidebar-logout-link .sidebar-link-icon {
-  color: #991b1b;
-}
-
-.sidebar-logout-link:hover {
-  color: #7f1d1d;
-  background: rgba(153, 27, 27, 0.06);
-}
-
 .mobile-bottom-nav {
   display: none;
 }
@@ -205,10 +191,6 @@ button {
   z-index: 20;
 }
 
-.main-header--dashboard {
-  display: none;
-}
-
 .main-header-left {
   display: flex;
   align-items: center;
@@ -230,6 +212,39 @@ button {
 
 .main-header-actions {
   justify-content: flex-end;
+}
+
+.main-logout-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.92);
+  color: #334155;
+  box-shadow: var(--shadow-sm);
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.main-logout-button:hover:not(:disabled) {
+  border-color: rgba(148, 163, 184, 0.55);
+  color: #0f172a;
+  background: #fff;
+}
+
+.main-logout-button:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.main-logout-icon {
+  display: grid;
+  place-items: center;
+  color: currentColor;
 }
 
 .main-content {
@@ -283,10 +298,6 @@ button {
   .sidebar-backdrop.is-visible {
     opacity: 1;
     pointer-events: auto;
-  }
-
-  .main-header--dashboard {
-    display: flex;
   }
 
   .main-content {
